@@ -205,14 +205,13 @@
 </nav>
 
 {#if mobileMenuOpen}
-	<div
+	<button
 		class="mobile-menu-backdrop mobile-only"
 		onclick={closeMobileMenu}
 		transition:fade={{ duration: 200 }}
-		role="button"
-		tabindex="-1"
 		aria-label="Close menu"
-	></div>
+		type="button"
+	></button>
 {/if}
 
 <style>
