@@ -1,7 +1,9 @@
 <script>
 	import { tasks } from './../lib/stores/tasks.js';
 	import { fade, slide } from 'svelte/transition';
+	import { goto } from '$app/navigation';
 	import TaskToggle from './TaskToggle.svelte';
+
 	let { task } = $props();
 
 	const priorityColors = {
@@ -41,13 +43,21 @@
 		}
 	};
 
+	// Navigate to task detail page
+	const handleCardClick = (e) => {
+		if (e.target.closest('button')) return;
+		goto(`/task/${task.id}`);
+	};
+
 	// Show edit form
-	const handleEdit = () => {
+	const handleEdit = (e) => {
+		e.stopPropagation();
 		editMode = true;
 		taskToEdit = { ...task };
 	};
 
 	const saveEdit = (event) => {
+		event.preventDefault();
 		event.stopPropagation?.();
 		if (!taskToEdit) return;
 		tasks.updateTask(task.id, { ...taskToEdit });
@@ -60,7 +70,8 @@
 	};
 
 	// Show confirm dialog
-	const handleDelete = () => {
+	const handleDelete = (e) => {
+		e.stopPropagation();
 		showDeleteConfirm = true;
 	};
 
@@ -76,14 +87,27 @@
 </script>
 
 <div
-	class={`flex w-full flex-col rounded-xl border-t-8 bg-white p-4 shadow ${getPriorityColor(task.priority)}`}
+	class={`group flex w-full cursor-pointer flex-col rounded-xl border-t-8 bg-white p-4 shadow transition-all hover:scale-[1.02] hover:shadow-xl ${getPriorityColor(task.priority)}`}
 	transition:fade={{ duration: 500 }}
+	onclick={handleCardClick}
+	onkeydown={(e) => e.key === 'Enter' && handleCardClick(e)}
+	role="button"
+	tabindex="0"
+	aria-label={`View task: ${task.title}`}
 >
-	<div class="flex items-center justify-between">
-		<h3 class="mb-1 text-lg font-medium text-gray-800">{task.title}</h3>
+	<div class="flex items-start justify-between gap-2">
+		<h3
+			class="mb-1 flex-1 text-lg font-semibold text-gray-800 transition-colors group-hover:text-purple-600"
+		>
+			{task.title}
+		</h3>
 		<TaskToggle {task} />
 	</div>
-	<p class="text-sm text-gray-600">{task.description}</p>
+
+	{#if task.description}
+		<p class="mb-2 line-clamp-2 text-sm text-gray-600">{task.description}</p>
+	{/if}
+
 	{#if task.dueDate}
 		<div class="my-2 flex items-center gap-2">
 			<svg
@@ -93,54 +117,74 @@
 				fill="none"
 				stroke="currentColor"
 				stroke-width="2"
+				class="text-gray-500"
 			>
 				<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
 				<line x1="16" y1="2" x2="16" y2="6"></line>
 				<line x1="8" y1="2" x2="8" y2="6"></line>
 				<line x1="3" y1="10" x2="21" y2="10"></line>
 			</svg>
-			<p class="text-xs text-gray-500">Due: {formatDate(task.dueDate)}</p>
+			<p class="text-xs font-medium text-gray-500">Due: {formatDate(task.dueDate)}</p>
 		</div>
 	{/if}
-	<div class="mt-2 flex items-center gap-4">
-		<button
-			class="cursor-pointer bg-transparent p-1 text-blue-500 hover:text-blue-800"
-			onclick={handleEdit}
-			aria-label="Edit task"
-			title="Edit"
-		>
-			<svg
-				width="18"
-				height="18"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-			>
-				<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-				<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-			</svg>
-		</button>
 
-		<button
-			class="cursor-pointer bg-transparent p-1 text-red-500 hover:text-red-800"
-			onclick={handleDelete}
-			aria-label="Delete task"
-			title="Delete"
-		>
-			<svg
-				width="18"
-				height="18"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
+	<div class="mt-3 flex items-center justify-between border-t border-gray-100 pt-3">
+		<div class="flex items-center gap-2">
+			<button
+				class="flex items-center gap-1 rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-600 transition-all hover:bg-blue-100 active:scale-95"
+				onclick={handleEdit}
+				aria-label="Edit task"
+				title="Edit"
 			>
-				<polyline points="3 6 5 6 21 6"></polyline>
-				<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-				></path>
-			</svg>
-		</button>
+				<svg
+					width="14"
+					height="14"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+				>
+					<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+					<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+				</svg>
+				<span>Edit</span>
+			</button>
+
+			<button
+				class="flex items-center gap-1 rounded-lg bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 transition-all hover:bg-red-100 active:scale-95"
+				onclick={handleDelete}
+				aria-label="Delete task"
+				title="Delete"
+			>
+				<svg
+					width="14"
+					height="14"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+				>
+					<polyline points="3 6 5 6 21 6"></polyline>
+					<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+					></path>
+				</svg>
+				<span>Delete</span>
+			</button>
+		</div>
+
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			width="18"
+			height="18"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="2"
+			class="text-gray-400 transition-all group-hover:translate-x-1 group-hover:text-purple-600"
+		>
+			<line x1="5" y1="12" x2="19" y2="12"></line>
+			<polyline points="12 5 19 12 12 19"></polyline>
+		</svg>
 	</div>
 </div>
 
