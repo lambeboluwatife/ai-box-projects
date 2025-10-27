@@ -110,7 +110,7 @@
 </script>
 
 <svelte:head>
-	<title>{task ? task.title : 'Task Not Found'} | TaskManager</title>
+	<title>{task ? task.title : 'Task Not Found'} | Task Manager</title>
 </svelte:head>
 
 <main class="min-h-screen bg-gradient-to-br from-[#64babe] via-purple-600 to-pink-600 p-4">

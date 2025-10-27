@@ -6,7 +6,7 @@
 
 	let { title = '', filterType = 'all', onAddTask = () => {} } = $props();
 
-	// Reactively filter tasks based on filterType
+	// filter tasks based on filterType
 	let filteredTasks = $derived(
 		filterType === 'pending'
 			? $tasks.filter((t) => !t.completed)
@@ -49,7 +49,6 @@
 			</div>
 		{/each}
 
-		<!-- Add Task Button - Only show in "To Do" board -->
 		{#if filterType === 'pending'}
 			<button
 				onclick={onAddTask}

@@ -84,7 +84,6 @@
 </script>
 
 {#if isOpen}
-	<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 	<div
 		class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
 		transition:fade={{ duration: 200 }}
@@ -98,7 +97,6 @@
 			transition:slide={{ duration: 300 }}
 			role="document"
 		>
-			<!-- Modal Header -->
 			<div class="flex items-center justify-between border-b border-gray-200 p-6">
 				<h2 id="modal-title" class="text-2xl font-bold text-gray-800">Add New Task</h2>
 				<button
@@ -123,9 +121,7 @@
 				</button>
 			</div>
 
-			<!-- Modal Body -->
 			<form onsubmit={handleSubmit} class="p-6">
-				<!-- Title Field -->
 				<div class="mb-5">
 					<label for="title" class="mb-2 block text-sm font-semibold text-gray-700">
 						Title <span class="text-red-500">*</span>
@@ -148,7 +144,6 @@
 					{/if}
 				</div>
 
-				<!-- Description Field -->
 				<div class="mb-5">
 					<label for="description" class="mb-2 block text-sm font-semibold text-gray-700">
 						Description
@@ -175,9 +170,7 @@
 					{/if}
 				</div>
 
-				<!-- Due Date and Priority Row -->
 				<div class="mb-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
-					<!-- Due Date Field -->
 					<div>
 						<label for="dueDate" class="mb-2 block text-sm font-semibold text-gray-700">
 							Due Date
@@ -191,7 +184,6 @@
 						/>
 					</div>
 
-					<!-- Priority Field -->
 					<div>
 						<label for="priority" class="mb-2 block text-sm font-semibold text-gray-700">
 							Priority
@@ -208,7 +200,6 @@
 					</div>
 				</div>
 
-				<!-- Form Actions -->
 				<div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
 					<button
 						type="button"

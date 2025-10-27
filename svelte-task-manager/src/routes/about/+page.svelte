@@ -47,10 +47,6 @@
 	];
 </script>
 
-<svelte:head>
-	<title>About | TaskManager</title>
-</svelte:head>
-
 <main class="min-h-screen bg-gradient-to-br from-[#64babe] via-purple-600 to-pink-600 p-4">
 	<Navigation />
 

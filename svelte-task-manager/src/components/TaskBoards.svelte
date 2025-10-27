@@ -1,4 +1,5 @@
 <script>
+	import { onMount } from 'svelte';
 	import { tasks } from './../lib/stores/tasks.js';
 	import Board from './Board.svelte';
 
@@ -8,7 +9,26 @@
 	let emptyMessage = 'No tasks found';
 
 	// loading state
-	let loading = false;
+	let loading = $state(true);
+
+	let allTasks = $state([]);
+
+	let unsub;
+
+	onMount(() => {
+		let first = true;
+		unsub = tasks.subscribe((value) => {
+			allTasks = value ?? [];
+			if (first) {
+				loading = false;
+				first = false;
+			}
+		});
+
+		return () => {
+			if (unsub) unsub();
+		};
+	});
 </script>
 
 <section class="my-10 grid grid-cols-1 items-start gap-4 md:grid-cols-3">
@@ -20,7 +40,7 @@
 			</div>
 			<p class="mt-6 text-lg font-medium text-white">Loading your tasks...</p>
 		</div>
-	{:else if $tasks.length === 0}
+	{:else if allTasks.length === 0}
 		<div class="col-span-3 flex flex-col items-center justify-center py-20">
 			<div class="mb-6 rounded-full bg-white/20 p-6 backdrop-blur-sm">
 				<svg

@@ -233,7 +233,6 @@
 		height: 64px;
 	}
 
-	/* Brand/Logo */
 	.nav-brand {
 		display: flex;
 		align-items: center;

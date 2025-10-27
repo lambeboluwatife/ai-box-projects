@@ -6,7 +6,7 @@
 </script>
 
 <svelte:head>
-	<title>SvelteKit About Page</title>
+	<title>About | Task Manager</title>
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
