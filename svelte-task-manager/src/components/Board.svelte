@@ -3,6 +3,7 @@
 	import Task from './Task.svelte';
 	import { slide, fade } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
+	import { droppable } from '$lib/dnd.js';
 
 	let { title = '', filterType = 'all', onAddTask = () => {} } = $props();
 
@@ -18,9 +19,54 @@
 	);
 </script>
 
-<div class="mb-4 rounded-2xl bg-gray-200 p-4 shadow-md" in:slide={{ duration: 400, delay: 100 }}>
+<div
+	class="column mb-4 rounded-2xl bg-gray-200 p-4 shadow-md transition-all hover:shadow-lg"
+	in:slide={{ duration: 400, delay: 100 }}
+	use:droppable={{
+		type: 'task',
+		data: { boardType: filterType },
+		onDrop: (item) => {
+			const task = $tasks.find((t) => t.id === item.id);
+			if (!task) return;
+
+			let updates = {};
+
+			if (filterType === 'pending') {
+				updates = {
+					completed: false,
+					progress: false
+				};
+			} else if (filterType === 'inProgress') {
+				updates = {
+					completed: false,
+					progress: true
+				};
+			} else if (filterType === 'completed') {
+				updates = {
+					completed: true,
+					completedAt: new Date().toISOString()
+				};
+			}
+
+			if (
+				(filterType === 'pending' && !task.completed && !task.progress) ||
+				(filterType === 'inProgress' && task.progress && !task.completed) ||
+				(filterType === 'completed' && task.completed)
+			) {
+				return;
+			}
+
+			tasks.updateTask(task.id, updates);
+		}
+	}}
+>
 	<div class="mb-4 flex w-full items-center justify-between">
-		<h2 class="text-xl font-semibold text-black">{title}</h2>
+		<div class="flex items-center gap-2">
+			<h2 class="text-xl font-semibold text-black">{title}</h2>
+			<span class="rounded-full bg-gray-300 px-2 py-1 text-xs font-semibold text-gray-700">
+				{filteredTasks.length}
+			</span>
+		</div>
 		<button class="cursor-pointer p-2 text-gray-700 hover:text-black" aria-label="board menu">
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -73,3 +119,18 @@
 		{/if}
 	</div>
 </div>
+
+<style>
+	.column:global(.droppable) {
+		background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(219, 39, 119, 0.1) 100%);
+		border: 2px dashed #8b5cf6;
+		border-radius: 1rem;
+		box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+		transform: scale(1.02);
+		transition: all 0.3s ease;
+	}
+
+	.column:global(.droppable) * {
+		pointer-events: none;
+	}
+</style>

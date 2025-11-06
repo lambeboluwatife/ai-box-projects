@@ -3,6 +3,7 @@
 	import { fade, slide } from 'svelte/transition';
 	import { goto } from '$app/navigation';
 	import TaskToggle from './TaskToggle.svelte';
+	import { draggable } from '$lib/dnd.js';
 
 	let { task } = $props();
 
@@ -90,6 +91,7 @@
 	class={`group flex w-full cursor-pointer flex-col rounded-xl border-t-8 bg-white p-4 shadow transition-all hover:scale-[1.02] hover:shadow-xl ${getPriorityColor(task.priority)}`}
 	transition:fade={{ duration: 500 }}
 	onclick={handleCardClick}
+	use:draggable={{ type: 'task', data: task }}
 	onkeydown={(e) => e.key === 'Enter' && handleCardClick(e)}
 	role="button"
 	tabindex="0"
